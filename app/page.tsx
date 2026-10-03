@@ -23,8 +23,7 @@ export default function Home() {
           <p className="home-kicker">목표 기업에 가까워지는 스펙 설계 · 데모용 가상 데이터</p>
           <h1>내 스펙, 무엇부터 보완해야 할까?</h1>
           <p className="home-lead">
-            관심 기업과 직무를 선택하면, 보완할 부분을 분석하고 그에 맞는 로드맵을 제안해드려요. 로그인 없이
-            브라우저에만 저장됩니다.
+            관심 기업과 직무를 선택하면, 보완할 부분을 분석하고 그에 맞는 로드맵을 제안해드려요.
           </p>
           <Link href="/specs" className="btn btn-primary">
             내 스펙 입력하기 <Icon name="chevron" size={18} />
