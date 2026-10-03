@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Layers, Plus, Pencil, Trash2, X, Check, FolderKanban } from 'lucide-react';
+import { Layers, Plus, Pencil, Trash2, X, Check, FolderKanban, Wand2, Loader2, AlertTriangle } from 'lucide-react';
 import { useSpecTopState } from '@/lib/storage';
 import { EXPERIENCE_TYPES, Experience, ExperienceType } from '@/lib/types';
 
@@ -15,10 +15,18 @@ const EMPTY_FORM = {
   title: '',
   role: '',
   skills: '',
+  outcome: '',
   startDate: '',
   endDate: '',
   description: '',
 };
+
+interface StructureApiResult {
+  activityType: ExperienceType | '';
+  role: string;
+  skills: string[];
+  outcome: string;
+}
 
 export default function ExperiencesPage() {
   const { state, setState, hydrated } = useSpecTopState();
@@ -27,11 +35,56 @@ export default function ExperiencesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [isStructuring, setIsStructuring] = useState(false);
+  const [structureError, setStructureError] = useState<string | null>(null);
+  const [structureNotice, setStructureNotice] = useState<string | null>(null);
+
+  const handleStructureWithAi = async () => {
+    const description = form.description.trim();
+    if (!description) {
+      setStructureError('먼저 경험 설명을 입력해주세요.');
+      return;
+    }
+
+    setIsStructuring(true);
+    setStructureError(null);
+    setStructureNotice(null);
+
+    try {
+      const res = await fetch('/api/structure-experience', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description }),
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.ok) {
+        setStructureError(json.error || '잠시 후 다시 시도해주세요.');
+        return;
+      }
+
+      const data = json.data as StructureApiResult;
+      setForm((f) => ({
+        ...f,
+        type: data.activityType || f.type,
+        role: data.role || f.role,
+        skills: data.skills.length > 0 ? data.skills.join(', ') : f.skills,
+        outcome: data.outcome || f.outcome,
+      }));
+      setStructureNotice('AI가 설명에서 활동 유형·역할·기술·성과를 추출했습니다. 내용을 확인하고 필요하면 수정해주세요.');
+    } catch {
+      setStructureError('네트워크 오류로 분석에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsStructuring(false);
+    }
+  };
 
   const resetForm = () => {
     setForm(EMPTY_FORM);
     setEditingId(null);
     setError(null);
+    setStructureError(null);
+    setStructureNotice(null);
   };
 
   const handleSubmit = () => {
@@ -59,6 +112,7 @@ export default function ExperiencesPage() {
                 title,
                 role: form.role.trim(),
                 skills: form.skills.trim(),
+                outcome: form.outcome.trim(),
                 startDate: form.startDate,
                 endDate: form.endDate,
                 description: form.description.trim(),
@@ -74,6 +128,7 @@ export default function ExperiencesPage() {
         title,
         role: form.role.trim(),
         skills: form.skills.trim(),
+        outcome: form.outcome.trim(),
         startDate: form.startDate,
         endDate: form.endDate,
         description: form.description.trim(),
@@ -93,11 +148,14 @@ export default function ExperiencesPage() {
       title: exp.title,
       role: exp.role,
       skills: exp.skills,
+      outcome: exp.outcome ?? '',
       startDate: exp.startDate,
       endDate: exp.endDate,
       description: exp.description,
     });
     setError(null);
+    setStructureError(null);
+    setStructureNotice(null);
   };
 
   const handleDelete = (id: string) => {
@@ -175,6 +233,17 @@ export default function ExperiencesPage() {
           </div>
 
           <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">성과</label>
+            <input
+              type="text"
+              value={form.outcome}
+              onChange={(e) => setForm((f) => ({ ...f, outcome: e.target.value }))}
+              placeholder="예: 실사용자 420명 확보, 응답속도 180ms 달성"
+              className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
               시작 시점 <span className="text-rose-500">*</span>
             </label>
@@ -207,6 +276,35 @@ export default function ExperiencesPage() {
               placeholder="예: REST API 설계 및 DB 모델링을 맡았고, 실사용자 420명을 확보했습니다."
               className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
+
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleStructureWithAi}
+                disabled={isStructuring}
+                className="inline-flex items-center gap-1.5 bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-700 font-semibold text-xs px-3 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isStructuring ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Wand2 className="w-3.5 h-3.5" />
+                )}
+                <span>{isStructuring ? 'AI가 분석 중...' : 'AI로 구조화하기'}</span>
+              </button>
+              <span className="text-[11px] text-slate-400">
+                설명에 적힌 내용만 근거로 활동유형·역할·기술·성과를 채워줍니다 (실시간 AI 호출).
+              </span>
+            </div>
+
+            {structureError && (
+              <p className="mt-1.5 text-xs text-rose-600 font-medium flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span>{structureError} 위 버튼을 다시 눌러 재시도할 수 있습니다.</span>
+              </p>
+            )}
+            {structureNotice && !structureError && (
+              <p className="mt-1.5 text-xs text-emerald-700 font-medium">{structureNotice}</p>
+            )}
           </div>
         </div>
 
@@ -270,6 +368,9 @@ export default function ExperiencesPage() {
                         </span>
                       ))}
                   </div>
+                )}
+                {exp.outcome && (
+                  <p className="text-xs text-emerald-700 mt-2 font-medium">성과: {exp.outcome}</p>
                 )}
                 {exp.description && <p className="text-xs text-slate-600 mt-2 leading-relaxed">{exp.description}</p>}
               </div>

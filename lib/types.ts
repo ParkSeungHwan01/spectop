@@ -22,6 +22,7 @@ export interface Experience {
   title: string;
   role: string;
   skills: string;
+  outcome: string;
   startDate: string; // YYYY-MM
   endDate: string; // YYYY-MM, 비어 있으면 진행중
   description: string;
