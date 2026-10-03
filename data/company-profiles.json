@@ -1,0 +1,42 @@
+[
+  {
+    "id": "company_a",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "가상 기업 A",
+    "target_job": "백엔드 개발자",
+    "company_focus": "CS·문제 해결 중점 (데모용 가상 기준, 실제 기업의 공식 채용 기준이 아님)",
+    "competency_targets": [
+      { "domain": "cs_problem_solving", "weight": 30, "target_score": 90 },
+      { "domain": "tech_stack", "weight": 25, "target_score": 85 },
+      { "domain": "project_experience", "weight": 20, "target_score": 80 },
+      { "domain": "collaboration", "weight": 15, "target_score": 75 },
+      { "domain": "practical_experience", "weight": 10, "target_score": 70 }
+    ],
+    "example_experiences": [
+      "코딩테스트 대비 알고리즘 문제풀이 꾸준히 수행",
+      "운영체제·네트워크·데이터베이스 등 CS 기본기 심화 스터디",
+      "분산 시스템/시스템 설계 관점의 프로젝트 경험"
+    ]
+  },
+  {
+    "id": "company_b",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "가상 기업 B",
+    "target_job": "백엔드 개발자",
+    "company_focus": "협업·서비스 구현 중점 (데모용 가상 기준, 실제 기업의 공식 채용 기준이 아님)",
+    "competency_targets": [
+      { "domain": "collaboration", "weight": 30, "target_score": 90 },
+      { "domain": "project_experience", "weight": 25, "target_score": 88 },
+      { "domain": "tech_stack", "weight": 20, "target_score": 80 },
+      { "domain": "practical_experience", "weight": 15, "target_score": 75 },
+      { "domain": "cs_problem_solving", "weight": 10, "target_score": 65 }
+    ],
+    "example_experiences": [
+      "다인 협업 프로젝트에서 역할 분담 및 코드 리뷰 경험",
+      "실제 사용자 대상 서비스 배포 및 운영 경험",
+      "Git 브랜치 전략, 애자일 스프린트 등 협업 프로세스 경험"
+    ]
+  }
+]

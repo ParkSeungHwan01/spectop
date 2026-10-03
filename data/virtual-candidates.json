@@ -1,0 +1,110 @@
+[
+  {
+    "id": "company_a_cand_1",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "company_a",
+    "target_job": "백엔드 개발자",
+    "school": "수도권 공과대학 컴퓨터공학과 (가상)",
+    "status": "최종 합격 (가상 시연 데이터)",
+    "tech_stack": ["Java", "Spring Boot", "MySQL", "Redis"],
+    "domain_scores": {
+      "cs_problem_solving": 94,
+      "tech_stack": 88,
+      "project_experience": 80,
+      "collaboration": 72,
+      "practical_experience": 60
+    },
+    "example_experience": "백준 골드 이상 알고리즘 문제풀이를 꾸준히 수행했고, 운영체제·네트워크 심화 스터디를 리드함"
+  },
+  {
+    "id": "company_a_cand_2",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "company_a",
+    "target_job": "백엔드 개발자",
+    "school": "지방 거점 국립대 소프트웨어학과 (가상)",
+    "status": "최종 합격 (가상 시연 데이터)",
+    "tech_stack": ["Python", "FastAPI", "PostgreSQL", "Docker"],
+    "domain_scores": {
+      "cs_problem_solving": 88,
+      "tech_stack": 82,
+      "project_experience": 85,
+      "collaboration": 78,
+      "practical_experience": 55
+    },
+    "example_experience": "시스템 설계 스터디와 분산 캐시 구조를 적용한 개인 프로젝트로 CS 역량을 증명함"
+  },
+  {
+    "id": "company_a_cand_3",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "company_a",
+    "target_job": "백엔드 개발자",
+    "school": "수도권 종합대학 전자정보공학과 (가상)",
+    "status": "최종 합격 (가상 시연 데이터)",
+    "tech_stack": ["Java", "Spring", "Kafka", "AWS"],
+    "domain_scores": {
+      "cs_problem_solving": 90,
+      "tech_stack": 90,
+      "project_experience": 70,
+      "collaboration": 65,
+      "practical_experience": 68
+    },
+    "example_experience": "Kafka 기반 비동기 메시지 처리 프로젝트와 2개월 백엔드 인턴 경험을 보유함"
+  },
+  {
+    "id": "company_b_cand_1",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "company_b",
+    "target_job": "백엔드 개발자",
+    "school": "수도권 공과대학 컴퓨터공학과 (가상)",
+    "status": "최종 합격 (가상 시연 데이터)",
+    "tech_stack": ["Java", "Spring Boot", "MySQL", "JPA"],
+    "domain_scores": {
+      "cs_problem_solving": 65,
+      "tech_stack": 80,
+      "project_experience": 90,
+      "collaboration": 92,
+      "practical_experience": 70
+    },
+    "example_experience": "3인 팀 프로젝트에서 백엔드 리드를 맡아 실사용자 420명 대상 서비스를 배포하고 운영함"
+  },
+  {
+    "id": "company_b_cand_2",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "company_b",
+    "target_job": "백엔드 개발자",
+    "school": "지방 거점 국립대 정보통신공학과 (가상)",
+    "status": "최종 합격 (가상 시연 데이터)",
+    "tech_stack": ["Python", "Django", "AWS", "Git"],
+    "domain_scores": {
+      "cs_problem_solving": 60,
+      "tech_stack": 78,
+      "project_experience": 85,
+      "collaboration": 88,
+      "practical_experience": 75
+    },
+    "example_experience": "동아리 협업 프로젝트 2건을 완료하며 코드 리뷰와 애자일 스프린트 프로세스를 주도함"
+  },
+  {
+    "id": "company_b_cand_3",
+    "is_synthetic": true,
+    "generated_with": "ChatGPT",
+    "target_company": "company_b",
+    "target_job": "백엔드 개발자",
+    "school": "수도권 종합대학 소프트웨어학과 (가상)",
+    "status": "최종 합격 (가상 시연 데이터)",
+    "tech_stack": ["Java", "Spring", "Docker", "AWS EC2"],
+    "domain_scores": {
+      "cs_problem_solving": 70,
+      "tech_stack": 83,
+      "project_experience": 88,
+      "collaboration": 90,
+      "practical_experience": 65
+    },
+    "example_experience": "4인 해커톤 팀장으로 48시간 내 서비스 배포를 완료하고 우수상을 수상함"
+  }
+]

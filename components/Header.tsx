@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: '/profile', label: '프로필' },
   { href: '/goal', label: '목표 설정' },
   { href: '/experiences', label: '경험 기록' },
+  { href: '/analysis', label: '비교 데이터' },
 ];
 
 export default function Header() {
