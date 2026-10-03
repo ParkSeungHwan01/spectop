@@ -1,0 +1,7 @@
+{
+  "name": "스펙탑 (SpecTop) - AI 맞춤형 취업 준비 서비스",
+  "description": "대학생의 경험을 합격자 포트폴리오와 비교하고 부족 역량과 다음 활동을 추천하는 AI 분석 플랫폼",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
