@@ -48,6 +48,44 @@ export default function SpecsPage() {
   });
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isStructuring, setIsStructuring] = useState(false);
+  const [structureError, setStructureError] = useState<string | null>(null);
+  const [structureNotice, setStructureNotice] = useState<string | null>(null);
+
+  const handleStructureWithAi = async () => {
+    const description = newProjectForm.description.trim();
+    if (!description) {
+      setStructureError('먼저 프로젝트 내용을 입력해주세요.');
+      return;
+    }
+    setIsStructuring(true);
+    setStructureError(null);
+    setStructureNotice(null);
+    try {
+      const res = await fetch('/api/structure-experience', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        setStructureError(json.error || '잠시 후 다시 시도해주세요.');
+        return;
+      }
+      const data = json.data as { role: string; skills: string[]; outcome: string };
+      setNewProjectForm((f) => ({
+        ...f,
+        role: data.role || f.role,
+        skills: data.skills.length > 0 ? data.skills.join(', ') : f.skills,
+        outcome: data.outcome || f.outcome,
+      }));
+      setStructureNotice('AI가 프로젝트 내용에서 역할·기술·성과를 추출했어요. 확인하고 필요하면 수정해주세요.');
+    } catch {
+      setStructureError('네트워크 오류로 분석에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsStructuring(false);
+    }
+  };
 
   if (!hydrated) {
     return <p style={{ color: 'var(--muted)', fontSize: 14 }}>불러오는 중...</p>;
@@ -386,6 +424,13 @@ export default function SpecsPage() {
                   <span>프로젝트 내용</span>
                   <textarea placeholder="프로젝트 목표 및 구조" value={newProjectForm.description} onChange={(e) => setNewProjectForm({ ...newProjectForm, description: e.target.value })} />
                 </label>
+                <div style={{ gridColumn: '1 / -1', marginTop: -8 }}>
+                  <Button type="button" variant="secondary" icon={isStructuring ? 'refresh' : 'link'} onClick={handleStructureWithAi} disabled={isStructuring}>
+                    {isStructuring ? 'AI가 분석 중...' : 'AI로 역할·기술·성과 채우기'}
+                  </Button>
+                  {structureError && <p style={{ color: '#9f3a38', fontSize: 11, marginTop: 6 }}>{structureError}</p>}
+                  {structureNotice && !structureError && <p style={{ color: 'var(--teal)', fontSize: 11, marginTop: 6 }}>{structureNotice}</p>}
+                </div>
                 <label className="wide">
                   <span>성과</span>
                   <input placeholder="예: 초당 트랜잭션 1,200 TPS 달성" value={newProjectForm.outcome} onChange={(e) => setNewProjectForm({ ...newProjectForm, outcome: e.target.value })} />
