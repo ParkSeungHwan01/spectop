@@ -7,12 +7,11 @@ import { Icon, Logo, type IconName } from './ui';
 
 const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: '/', label: '홈', icon: 'home' },
-  { href: '/profile', label: '프로필', icon: 'user' },
-  { href: '/goal', label: '목표 설정', icon: 'building' },
-  { href: '/experiences', label: '경험 기록', icon: 'stack' },
-  { href: '/analysis', label: '역량 분석', icon: 'compare' },
+  { href: '/specs', label: '내 스펙', icon: 'user' },
+  { href: '/targets', label: '관심 직무·기업', icon: 'building' },
   { href: '/recommendations', label: '추천 활동', icon: 'trend' },
   { href: '/roadmap', label: '로드맵', icon: 'clock' },
+  { href: '/report', label: '리포트', icon: 'report' },
 ];
 
 export default function Header() {
@@ -30,11 +29,7 @@ export default function Header() {
 
         <nav className="topnav-menu">
           {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`topnav-item ${isActive(item.href) ? 'active' : ''}`}
-            >
+            <Link key={item.href} href={item.href} className={`topnav-item ${isActive(item.href) ? 'active' : ''}`}>
               {item.label}
             </Link>
           ))}
@@ -48,12 +43,7 @@ export default function Header() {
       {mobileOpen && (
         <div className="mobile-menu">
           {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={isActive(item.href) ? 'active' : ''}
-              onClick={() => setMobileOpen(false)}
-            >
+            <Link key={item.href} href={item.href} className={isActive(item.href) ? 'active' : ''} onClick={() => setMobileOpen(false)}>
               <Icon name={item.icon} size={18} />
               <span>{item.label}</span>
             </Link>

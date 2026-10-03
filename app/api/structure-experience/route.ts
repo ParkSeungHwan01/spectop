@@ -1,20 +1,14 @@
 import { NextResponse } from 'next/server';
-import { EXPERIENCE_TYPES, ExperienceType } from '@/lib/types';
 
-// FR-04 경험 구조화: 사용자의 자유 서술에서 활동 유형·역할·기술·성과를 추출한다.
-// PRD 원칙: 서술에 없는 내용은 추정하지 않고 빈 값으로 둔다. 추출 결과는 화면에서 사용자가 확인/수정 후에만 저장된다.
+// 자유 서술에서 역할·기술·성과를 추출한다.
+// 원칙: 서술에 없는 내용은 추정하지 않고 빈 값으로 둔다. 추출 결과는 화면에서 사용자가 확인/수정 후에만 저장된다.
 
 const TIMEOUT_MS = 15000;
 
 interface StructuredResult {
-  activityType: ExperienceType | '';
   role: string;
   skills: string[];
   outcome: string;
-}
-
-function isExperienceType(value: unknown): value is ExperienceType {
-  return typeof value === 'string' && (EXPERIENCE_TYPES as string[]).includes(value);
 }
 
 export async function POST(req: Request) {
@@ -35,7 +29,7 @@ export async function POST(req: Request) {
   }
 
   if (!description) {
-    return NextResponse.json({ ok: false, error: '분석할 경험 설명이 없습니다.' }, { status: 400 });
+    return NextResponse.json({ ok: false, error: '분석할 설명이 없습니다.' }, { status: 400 });
   }
 
   const controller = new AbortController();
@@ -56,10 +50,9 @@ export async function POST(req: Request) {
           {
             role: 'system',
             content:
-              '너는 대학생의 경험 서술을 구조화하는 도우미다. 사용자가 적은 문장에 실제로 쓰인 내용만 근거로 JSON을 만들어라. ' +
+              '너는 대학생의 프로젝트/경험 서술을 구조화하는 도우미다. 사용자가 적은 문장에 실제로 쓰인 내용만 근거로 JSON을 만들어라. ' +
               '문장에 없는 정보는 추측하지 말고 빈 문자열 또는 빈 배열로 남겨라. ' +
-              `activityType은 다음 중 하나여야 한다: ${EXPERIENCE_TYPES.join(', ')} (명확하지 않으면 "기타"). ` +
-              '출력은 반드시 {"activityType": string, "role": string, "skills": string[], "outcome": string} 형식의 JSON 객체 하나여야 한다.',
+              '출력은 반드시 {"role": string, "skills": string[], "outcome": string} 형식의 JSON 객체 하나여야 한다.',
           },
           { role: 'user', content: description },
         ],
@@ -102,7 +95,6 @@ export async function POST(req: Request) {
 
     const p = (parsed ?? {}) as Record<string, unknown>;
     const result: StructuredResult = {
-      activityType: isExperienceType(p.activityType) ? p.activityType : '',
       role: typeof p.role === 'string' ? p.role.trim() : '',
       skills: Array.isArray(p.skills) ? p.skills.filter((s): s is string => typeof s === 'string' && s.trim() !== '') : [],
       outcome: typeof p.outcome === 'string' ? p.outcome.trim() : '',
