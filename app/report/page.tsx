@@ -86,7 +86,7 @@ export default function ReportPage() {
         {record.company_demo_profiles.length === 0 ? (
           <div className="report-company-list">
             <article className="report-company">
-              <div className="report-company-title"><div><h3>선택한 기업이 없어요</h3></div><p>관심 직무·기업에서 비교할 기업을 선택해주세요.</p></div>
+              <div className="report-company-title" style={{ gridColumn: '1 / span 3' }}><div><h3>선택한 기업이 없어요</h3></div><p>관심 직무·기업에서 비교할 기업을 선택해주세요.</p></div>
               <Button variant="secondary" onClick={() => router.push('/targets')}>기업 선택하기</Button>
             </article>
           </div>
