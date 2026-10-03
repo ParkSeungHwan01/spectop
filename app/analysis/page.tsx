@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles, Building2, GraduationCap, ArrowRight, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Building2, GraduationCap, ArrowRight, TrendingUp, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useSpecTopState } from '@/lib/storage';
 import { getCandidatesByCompany, getCompanyProfile } from '@/lib/virtualData';
 import { COMPETENCY_DOMAINS, CompetencyDomainId } from '@/lib/types';
@@ -22,7 +23,14 @@ const LEVEL_BAR_COLOR: Record<CompetencyLevel, string> = {
 };
 
 export default function AnalysisPage() {
-  const { state, hydrated } = useSpecTopState();
+  const { state, setState, hydrated } = useSpecTopState();
+  const [justReanalyzed, setJustReanalyzed] = useState(false);
+
+  const handleReanalyze = () => {
+    setState((prev) => ({ ...prev, analysisVersion: prev.analysisVersion + 1 }));
+    setJustReanalyzed(true);
+    setTimeout(() => setJustReanalyzed(false), 3000);
+  };
 
   if (!hydrated) {
     return <div className="text-sm text-slate-500">불러오는 중...</div>;
@@ -58,10 +66,30 @@ export default function AnalysisPage() {
 
   return (
     <div className="space-y-6">
-      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-        <Sparkles className="w-3.5 h-3.5" />
-        데모용 가상 합격자 데이터 · AI 생성 · 실제 채용 통계 아님
-      </span>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <Sparkles className="w-3.5 h-3.5" />
+          데모용 가상 합격자 데이터 · AI 생성 · 실제 채용 통계 아님
+        </span>
+
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-slate-400 font-mono">분석 버전 v{state.analysisVersion}</span>
+          <button
+            onClick={handleReanalyze}
+            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition-colors shadow-sm"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>다시 분석하기</span>
+          </button>
+        </div>
+      </div>
+
+      {justReanalyzed && (
+        <p className="text-xs text-emerald-700 flex items-center gap-1.5 -mt-2">
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          최신 경험을 반영해 재분석했습니다 (v{state.analysisVersion}).
+        </p>
+      )}
 
       <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <div className="flex items-center gap-2.5">
