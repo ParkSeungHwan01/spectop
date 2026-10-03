@@ -34,11 +34,6 @@ function TargetsPageInner() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  if (!hydrated) {
-    return <p style={{ color: 'var(--muted)', fontSize: 14 }}>불러오는 중...</p>;
-  }
-
-  const selectedIds = record.company_demo_profiles.map((c) => c.id);
   const keyword = query.trim();
 
   const results = useMemo(() => {
@@ -49,6 +44,11 @@ function TargetsPageInner() {
     );
   }, [keyword]);
 
+  if (!hydrated) {
+    return <p style={{ color: 'var(--muted)', fontSize: 14 }}>불러오는 중...</p>;
+  }
+
+  const selectedIds = record.company_demo_profiles.map((c) => c.id);
   const companies = record.company_demo_profiles;
   const active: CompanyBaseline | undefined = companies.find((c) => c.id === activeId) ?? companies[0];
   const rows = active ? buildGapResults(record, active) : [];
