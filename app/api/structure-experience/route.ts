@@ -50,9 +50,8 @@ export async function POST(req: Request) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-6-luna',
         response_format: { type: 'json_object' },
-        temperature: 0,
         messages: [
           {
             role: 'system',
@@ -71,7 +70,11 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errText = await response.text().catch(() => '');
-      console.error('OpenAI API error', response.status, errText);
+      console.error('OpenAI API error', response.status, errText, {
+        organization: response.headers.get('openai-organization'),
+        processingMs: response.headers.get('openai-processing-ms'),
+        requestId: response.headers.get('x-request-id'),
+      });
       return NextResponse.json(
         { ok: false, error: 'AI 분석 서버 응답에 실패했습니다. 잠시 후 다시 시도해주세요.' },
         { status: 502 }
