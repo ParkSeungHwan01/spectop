@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GraduationCap, Save, CheckCircle2 } from 'lucide-react';
 import { useSpecTopState } from '@/lib/storage';
 import { SCHOOL_YEAR_OPTIONS } from '@/lib/types';
+import { Icon, Button, PageHeader } from '@/components/ui';
 
 export default function ProfilePage() {
   const { state, setState, hydrated } = useSpecTopState();
@@ -14,7 +14,6 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
 
-  // 로컬 저장값이 로드되면 폼 초기값으로 반영
   useEffect(() => {
     if (!hydrated) return;
     setMajor(state.profile.major);
@@ -53,45 +52,23 @@ export default function ProfilePage() {
   };
 
   if (!hydrated) {
-    return <div className="text-sm text-slate-500">불러오는 중...</div>;
+    return <p style={{ color: 'var(--muted)', fontSize: 14 }}>불러오는 중...</p>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-emerald-50 rounded-lg text-emerald-700">
-            <GraduationCap className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-base font-bold text-slate-900">커리어 프로필</h1>
-            <p className="text-xs text-slate-500">전공·학년·학점(선택)을 입력하면 브라우저에 저장됩니다.</p>
-          </div>
-        </div>
+    <>
+      <PageHeader title="커리어 프로필" description="전공·학년·학점(선택)을 입력하면 브라우저에 저장됩니다." />
 
-        <div className="mt-5 space-y-4 max-w-md">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              전공 <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={major}
-              onChange={(e) => setMajor(e.target.value)}
-              placeholder="예: 컴퓨터공학과"
-              className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
+      <section className="setup-card">
+        <div className="form-grid">
+          <label>
+            <span>전공 *</span>
+            <input value={major} onChange={(e) => setMajor(e.target.value)} placeholder="예: 컴퓨터공학과" />
+          </label>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              학년·상태 <span className="text-rose-500">*</span>
-            </label>
-            <select
-              value={schoolYear}
-              onChange={(e) => setSchoolYear(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
-            >
+          <label>
+            <span>학년·상태 *</span>
+            <select value={schoolYear} onChange={(e) => setSchoolYear(e.target.value)}>
               <option value="">선택해주세요</option>
               {SCHOOL_YEAR_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
@@ -99,49 +76,51 @@ export default function ProfilePage() {
                 </option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">학점 (선택, 4.5 만점 기준)</label>
+          <label className="wide">
+            <span>학점 <small>4.5 만점 기준, 선택 입력</small></span>
             <input
-              type="text"
               inputMode="decimal"
               value={gradeInput}
               onChange={(e) => setGradeInput(e.target.value)}
               placeholder="예: 3.8 (입력하지 않으면 미확인으로 처리)"
-              className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
-          </div>
+          </label>
+        </div>
 
-          {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
+        {error && (
+          <p style={{ color: '#9f3a38', fontSize: 12, fontWeight: 600, marginTop: 4 }}>{error}</p>
+        )}
 
-          <button
-            onClick={handleSave}
-            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition-colors shadow-sm"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>저장하기</span>
-          </button>
-
+        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Button onClick={handleSave} icon="check">
+            저장하기
+          </Button>
           {savedAt && (
-            <p className="text-xs text-emerald-700 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" />
+            <span style={{ color: 'var(--teal)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Icon name="check" size={14} />
               저장되었습니다. 새로고침해도 값이 유지됩니다.
-            </p>
+            </span>
           )}
         </div>
-      </div>
+      </section>
 
       {(state.profile.major || state.profile.schoolYear) && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <h2 className="text-xs font-semibold text-slate-500 mb-2">현재 저장된 프로필</h2>
-          <div className="text-sm text-slate-800 space-y-1">
-            <div>전공: <strong>{state.profile.major || '미확인'}</strong></div>
-            <div>학년·상태: <strong>{state.profile.schoolYear || '미확인'}</strong></div>
-            <div>학점: <strong>{state.profile.grade === null ? '미확인' : `${state.profile.grade} / 4.5`}</strong></div>
+        <section className="setup-card">
+          <div className="setup-head" style={{ border: 0, paddingBottom: 0 }}>
+            <span>저장됨</span>
+            <div>
+              <h2>현재 저장된 프로필</h2>
+            </div>
           </div>
-        </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 14, fontSize: 13 }}>
+            <div>전공: <b>{state.profile.major || '미확인'}</b></div>
+            <div>학년·상태: <b>{state.profile.schoolYear || '미확인'}</b></div>
+            <div>학점: <b>{state.profile.grade === null ? '미확인' : `${state.profile.grade} / 4.5`}</b></div>
+          </div>
+        </section>
       )}
-    </div>
+    </>
   );
 }
