@@ -1,10 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles, Building2, GraduationCap, Target, ArrowRight } from 'lucide-react';
+import { Sparkles, Building2, GraduationCap, ArrowRight, TrendingUp } from 'lucide-react';
 import { useSpecTopState } from '@/lib/storage';
 import { getCandidatesByCompany, getCompanyProfile } from '@/lib/virtualData';
-import { COMPETENCY_DOMAINS } from '@/lib/types';
+import { COMPETENCY_DOMAINS, CompetencyDomainId } from '@/lib/types';
+import { computeGapResults, CompetencyLevel } from '@/lib/scoring';
+
+const LEVEL_STYLES: Record<CompetencyLevel, string> = {
+  '강점': 'bg-emerald-100 text-emerald-800',
+  '양호': 'bg-amber-100 text-amber-800',
+  '보완 필요': 'bg-rose-100 text-rose-800',
+  '미확인': 'bg-slate-100 text-slate-500',
+};
+
+const LEVEL_BAR_COLOR: Record<CompetencyLevel, string> = {
+  '강점': 'bg-emerald-600',
+  '양호': 'bg-amber-500',
+  '보완 필요': 'bg-rose-500',
+  '미확인': 'bg-slate-300',
+};
 
 export default function AnalysisPage() {
   const { state, hydrated } = useSpecTopState();
@@ -33,6 +48,13 @@ export default function AnalysisPage() {
   }
 
   const candidates = getCandidatesByCompany(state.careerGoal.targetCompany);
+
+  const domainLabels = COMPETENCY_DOMAINS.reduce((acc, d) => {
+    acc[d.id] = d.label;
+    return acc;
+  }, {} as Record<CompetencyDomainId, string>);
+
+  const gapResults = computeGapResults(companyProfile, state.experiences, domainLabels);
 
   return (
     <div className="space-y-6">
@@ -81,6 +103,61 @@ export default function AnalysisPage() {
         </div>
       </div>
 
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <TrendingUp className="w-4 h-4 text-emerald-700" />
+          내 역량 분석 (가상 기준 대비 GAP)
+        </h2>
+        <p className="text-xs text-slate-500 mt-1">
+          입력한 경험을 근거로 규칙 기반(세부기준 4개 × 25점)으로 계산합니다. 근거가 없는 항목은 0점이 아니라 &apos;미확인&apos;으로 표시합니다.
+        </p>
+
+        <div className="mt-4 space-y-4">
+          {gapResults.map((r) => {
+            const domainLabel = domainLabels[r.domain];
+            return (
+              <div key={r.domain} className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-slate-800">{domainLabel}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${LEVEL_STYLES[r.level]}`}>{r.level}</span>
+                    <span className="font-mono text-slate-700">
+                      <strong>{r.userScore === null ? '미확인' : `${r.userScore}점`}</strong> / 참고 {r.targetScore}점
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${LEVEL_BAR_COLOR[r.level]}`}
+                      style={{ width: `${r.userScore ?? 0}%` }}
+                    />
+                  </div>
+                  <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden flex opacity-60">
+                    <div className="h-full bg-slate-400 rounded-full" style={{ width: `${r.targetScore}%` }} />
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  {r.reason}
+                  {r.gap !== null && (
+                    <>
+                      {' '}
+                      {r.gap > 0 ? (
+                        <span className="text-rose-600 font-semibold">(참고 기준보다 {r.gap}점 낮음)</span>
+                      ) : (
+                        <span className="text-emerald-700 font-semibold">(참고 기준보다 {Math.abs(r.gap)}점 높음)</span>
+                      )}
+                    </>
+                  )}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="space-y-3">
         <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
           <GraduationCap className="w-4 h-4 text-emerald-700" />
@@ -121,12 +198,6 @@ export default function AnalysisPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
-        <Target className="w-4 h-4 text-emerald-700 shrink-0" />
-        <p className="text-xs text-slate-500">
-          이 기준과 내 경험을 비교해 역량 점수·GAP·보완 활동을 보여주는 기능은 다음 단계(FR-06)에서 이어집니다.
-        </p>
-      </div>
     </div>
   );
 }
